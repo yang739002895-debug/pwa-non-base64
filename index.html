@@ -179,7 +179,7 @@
         <div class="form-group">
             <div class="form-row">
                 <label class="form-label">厅时段:</label>
-                <input type="text" id="timeInput" class="form-input" placeholder="例如：奥斯卡厅晚宴">
+                <input type="text" id="timeInput" class="form-input" placeholder="例如：奥斯卡晚宴">
             </div>
             <div class="form-row">
                 <label class="form-label">新郎姓名:</label>
@@ -584,12 +584,13 @@
         }
 
         function initApp() {
-            if (window.innerWidth < 800) {
-                elements.res1k.checked = true;
-            }
-            initEventListeners();
-            preloadResources().then(() => {
-                updatePreview();
+            elements.res4k.checked = true;
+            elements.res1k.checked = false;
+
+   	    customFontFamily = loadCustomFont();
+ 	   initEventListeners();
+	preloadResources().then(() => {
+        	updatePreview();
             });
         }
 
