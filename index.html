@@ -188,7 +188,7 @@
             <div class="form-row">
                 <label class="form-label">厅时段:</label>
                 <!-- 默认值：奥斯卡晚宴 -->
-                <input type="text" id="timeInput" class="form-input" placeholder="例如：奥斯卡晚宴" value="奥斯卡晚宴">
+                <input type="text" id="timeInput" class="form-input" placeholder="例如：奥斯卡晚宴">
             </div>
             <div class="form-row">
                 <label class="form-label">新郎姓名:</label>
@@ -510,10 +510,10 @@
             ctx.drawImage(bgImg, 0, 0, 3840, 2160);
 
             // 获取输入值 (默认值：奥斯卡晚宴)
-            const hallTime = elements.timeInput.value.trim() || "奥斯卡晚宴";
+            const hallTime = elements.timeInput.value.trim() || "什么厅晚宴";
             const groom = elements.groomInput.value.trim() || "新郎";
             const bride = elements.brideInput.value.trim() || "新娘";
-            const weddingType = elements.typeInput.value.trim() || "联姻宴";
+            const weddingType = elements.typeInput.value.trim() || "没写宴";
             const textColor = "rgba(120, 65, 25, 1)";
 
             // 文字坐标 (已修正垂直偏移)
@@ -669,3 +669,4 @@
     </script>
 </body>
 </html>
+
