@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wedding-pwa-v1.1'; // 版本号更新，强制刷新缓存
+const CACHE_NAME = 'wedding-pwa-v2'; // 版本号更新，强制刷新缓存
 const urlsToCache = [
   './index.html',
   './manifest.json',
@@ -35,3 +35,4 @@ self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 
 });
+
