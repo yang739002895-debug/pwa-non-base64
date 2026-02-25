@@ -217,6 +217,11 @@
                 transform: scale(0.9) !important;
                 margin-right: 3px !important;
             }
+            .row-radio {
+                flex-direction: row !important;
+                gap: 10px !important;
+            }
+    
         }
 
         .preview-container {
@@ -334,7 +339,7 @@
     <div class="container">
         <h1>
             好莳威汀水台 
-            <span class="version-tag">v1.5</span>
+            <span class="version-tag">v1.51</span>
         </h1>
         
         <div class="form-group">
@@ -439,7 +444,7 @@
                     <!-- 分辨率在左 -->
                     <div class="export-item">
                         <label>分辨率:</label>
-                        <div class="radio-group">
+                        <div class="radio-group row-radio">
                             <label class="radio-item"><input type="radio" name="resolution" id="res4k" value="4k" checked> 4K</label>
                             <label class="radio-item"><input type="radio" name="resolution" id="res1k" value="1k"> 1080P</label>
                         </div>
@@ -447,7 +452,7 @@
                     <!-- 格式在右 -->
                     <div class="export-item">
                         <label>格式:</label>
-                        <div class="radio-group">
+                        <div class="radio-group row-radio">
                             <label class="radio-item"><input type="radio" name="format" id="fmtJpg" value="jpg" checked> JPG</label>
                             <label class="radio-item"><input type="radio" name="format" id="fmtPng" value="png"> PNG</label>
                         </div>
@@ -798,3 +803,4 @@
     </script>
 </body>
 </html>
+
