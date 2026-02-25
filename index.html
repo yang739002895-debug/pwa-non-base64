@@ -163,8 +163,6 @@
             .btn { width: 100%; margin-right: 0; }
             .controls-wrapper { flex-direction: row !important; }
             .control-group { width: 48% !important; padding: 10px; }
-            .export-content { display: flex; flex-direction: row; gap: 15px; flex-wrap: wrap; }
-            .export-content > div { flex: 1; min-width: 140px; }
             
             /* ✅ 修复：强制让特定行在手机上保持左右排列 */
             .row-desktop-mobile {
@@ -186,6 +184,32 @@
                 min-width: 100px !important;
                 padding: 8px !important;
                 font-size: 14px !important;
+            }
+
+            /* ✅ 新增：导出设置强制左右排列，且紧凑 */
+            .export-content {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 10px !important; /* 减小间距 */
+                flex-wrap: nowrap !important; /* 强制不换行 */
+            }
+            .export-item {
+                flex: 1 !important;
+                min-width: 0 !important; /* 允许压缩 */
+            }
+            .export-item label {
+                font-size: 0.85rem !important; /* 稍微减小字体 */
+                margin-bottom: 4px !important;
+            }
+            .radio-group {
+                gap: 5px !important;
+            }
+            .radio-item {
+                font-size: 0.8rem !important; /* 减小选项字体 */
+            }
+            .radio-item input {
+                transform: scale(1.0) !important; /* 减小单选框大小 */
+                margin-right: 2px !important;
             }
         }
 
@@ -276,7 +300,12 @@
         .export-content { transition: all 0.3s ease; }
         .export-content.collapsed { display: none; }
         
-        .export-row { display: flex; gap: 20px; flex-wrap: wrap; }
+        /* 桌面端默认左右排列 */
+        .export-row { 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+        }
         .export-item { flex: 1; min-width: 200px; }
         .export-item label { font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 5px; }
 
@@ -299,11 +328,11 @@
     <div class="container">
         <h1>
             好莳威汀水台 
-            <span class="version-tag">v1.2</span>
+            <span class="version-tag">v1.0</span>
         </h1>
         
         <div class="form-group">
-            <!-- ✅ 修复：添加 row-desktop-mobile 类，强制手机端左右排列 -->
+            <!-- 厅时段和宴席类型左右排列 -->
             <div class="form-row row-desktop-mobile">
                 <label class="form-label">厅时段:</label>
                 <input type="text" id="timeInput" class="form-input" placeholder="例如：奥斯卡晚宴">
@@ -391,6 +420,7 @@
             <button id="refreshBtn" class="btn btn-warning">🔄 刷新预览</button>
         </div>
 
+        <!-- 导出设置 -->
         <div class="export-options">
             <div class="export-header">
                 <h3 class="export-title">导出设置</h3>
@@ -398,6 +428,7 @@
             </div>
             <div class="export-content collapsed" id="exportContent">
                 <div class="export-row">
+                    <!-- 分辨率在左 -->
                     <div class="export-item">
                         <label>分辨率:</label>
                         <div class="radio-group">
@@ -405,6 +436,7 @@
                             <label class="radio-item"><input type="radio" name="resolution" id="res1k" value="1k"> 1080P</label>
                         </div>
                     </div>
+                    <!-- 格式在右 -->
                     <div class="export-item">
                         <label>格式:</label>
                         <div class="radio-group">
@@ -432,9 +464,8 @@
     </script>
 
     <script>
-        // ================= 配置区 =================
-        const BACKGROUND_URL = "./back.png"; // ⚠️ 建议改为 back.webp 以提速
-        const FONT_URL = "./FZXiaoBiaoSong-B05S.woff2"; // ⚠️ 建议改为子集化字体
+        const BACKGROUND_URL = "./back.png";
+        const FONT_URL = "./FZXiaoBiaoSong-B05S.woff2";
         const BASE_FONT_SIZE = 192;
         
         let userImageBase64 = null;
@@ -507,7 +538,6 @@
             });
         }
 
-        // ⚡️ 并行加载资源
         async function preloadResources() {
             const loadFontPromise = (async () => {
                 if (!FONT_URL) return 'serif';
@@ -760,5 +790,3 @@
     </script>
 </body>
 </html>
-
-
