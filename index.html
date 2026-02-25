@@ -23,28 +23,42 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
         
-        /* 加载遮罩 */
+        /* 🎉 全新加载遮罩样式 */
         #loading-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
             z-index: 9999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+            text-align: center;
         }
-        .spinner {
-            width: 30px; height: 30px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 10px;
+        .loading-icon {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { color: #666; font-size: 0.9rem; }
+        .loading-tip {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-width: 300px;
+            background: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .loading-tip strong {
+            color: #ff4757;
+            font-weight: 600;
+        }
 
         .container {
             max-width: 900px;
@@ -155,7 +169,7 @@
             margin-bottom: 0;
         }
         
-        /* ✅ 修复：手机端通用布局 */
+        /* ✅ 手机端布局优化 (已清理冗余代码) */
         @media (max-width: 768px) {
             .form-row { flex-direction: column; align-items: stretch; gap: 5px; }
             .form-label { width: 100%; text-align: left; margin-bottom: 2px; font-weight: bold;}
@@ -164,7 +178,7 @@
             .controls-wrapper { flex-direction: row !important; }
             .control-group { width: 48% !important; padding: 10px; }
             
-            /* ✅ 修复：强制让特定行在手机上保持左右排列 */
+            /* 厅时段和宴席类型保持左右 */
             .row-desktop-mobile {
                 flex-direction: row !important;
                 align-items: center !important;
@@ -185,43 +199,6 @@
                 padding: 8px !important;
                 font-size: 14px !important;
             }
-
-            /* ✅ 新增：导出设置强制左右排列，且紧凑 */
-            .export-content {
-                display: flex !important;
-                flex-direction: row !important;
-                gap: 10px !important;
-                flex-wrap: nowrap !important;
-            }
-            .export-item {
-                flex: 1 !important;
-                min-width: 0 !important;
-            }
-            .export-item label {
-                font-size: 0.85rem !important;
-                margin-bottom: 4px !important;
-            }
-            
-            /* ✅ 核心修复：强制导出设置内的单选框组为横排 */
-            .export-content .radio-group {
-                display: flex !important;
-                flex-direction: row !important; /* 强制横排 */
-                gap: 8px !important;
-                flex-wrap: wrap;
-            }
-            .export-content .radio-item {
-                font-size: 0.8rem !important;
-                white-space: nowrap;
-            }
-            .export-content .radio-item input {
-                transform: scale(0.9) !important;
-                margin-right: 3px !important;
-            }
-            .row-radio {
-                flex-direction: row !important;
-                gap: 10px !important;
-            }
-    
         }
 
         .preview-container {
@@ -311,18 +288,40 @@
         .export-content { transition: all 0.3s ease; }
         .export-content.collapsed { display: none; }
         
-        /* 桌面端默认左右排列 */
-        .export-row { 
+        /* ✅ 核心修改：导出设置内部直接 Flex 布局，无需媒体查询强制 */
+        .export-inner-flex {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .export-col {
+            flex: 1;
+            min-width: 0; /* 允许压缩 */
+        }
+        .export-col label.main-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        
+        .radio-group { 
             display: flex; 
-            gap: 20px; 
+            gap: 10px; 
             flex-wrap: wrap; 
         }
-        .export-item { flex: 1; min-width: 200px; }
-        .export-item label { font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 5px; }
-
-        .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .radio-item { display: flex; align-items: center; font-size: 0.9rem; white-space: nowrap; }
-        .radio-item input { margin-right: 4px; transform: scale(1.1); }
+        .radio-item { 
+            display: flex; 
+            align-items: center; 
+            font-size: 0.9rem; 
+            white-space: nowrap; 
+        }
+        .radio-item input { 
+            margin-right: 4px; 
+            transform: scale(1.1); 
+        }
         
         .file-info { margin-left: 10px; color: #666; font-size: 0.9rem; word-break: break-all; line-height: 40px; }
         .hidden { display: none; }
@@ -331,15 +330,18 @@
 </head>
 <body>
 
+    <!-- 🎉 全新加载遮罩 -->
     <div id="loading-overlay">
-        <div class="spinner"></div>
-        <div class="loading-text">正在加载资源...</div>
+        <img src="./icon-512.png" alt="Logo" class="loading-icon">
+        <div class="loading-tip">
+            首次加载大概需要<strong>3分钟</strong>，<br>请耐心等待...
+        </div>
     </div>
 
     <div class="container">
         <h1>
             好莳威汀水台 
-            <span class="version-tag">v1.51</span>
+            <span class="version-tag">v1.6</span>
         </h1>
         
         <div class="form-group">
@@ -382,7 +384,7 @@
         </div>
 
         <div class="controls-wrapper">
-            <!-- ✅ 修改：删除了 📷 表情 -->
+            <!-- 图片位置 -->
             <div id="cropControls" class="control-group">
                 <div class="control-header">
                     <h4 class="control-title">图片位置</h4>
@@ -403,7 +405,7 @@
                 </div>
             </div>
 
-            <!-- ✅ 修改：删除了 ✍️ 表情 -->
+            <!-- 姓名位置 -->
             <div id="nameControls" class="control-group" style="display:none;">
                 <div class="control-header">
                     <h4 class="control-title">姓名位置</h4>
@@ -433,30 +435,34 @@
             <button id="refreshBtn" class="btn btn-warning">🔄 刷新预览</button>
         </div>
 
-        <!-- 导出设置 -->
+        <!-- ✅ 导出设置：结构重组，天然左右分布 -->
         <div class="export-options">
             <div class="export-header">
                 <h3 class="export-title">导出设置</h3>
                 <button class="icon-btn" id="toggleExportBtn" title="展开/折叠">+</button>
             </div>
             <div class="export-content collapsed" id="exportContent">
-                <div class="export-row">
-                    <!-- 分辨率在左 -->
-                    <div class="export-item">
-                        <label>分辨率:</label>
-                        <div class="radio-group row-radio">
+                <!-- 直接使用 Flex 容器，不再依赖 export-row 和 export-item -->
+                <div class="export-inner-flex">
+                    
+                    <!-- 左侧：分辨率 -->
+                    <div class="export-col">
+                        <label class="main-label">分辨率:</label>
+                        <div class="radio-group">
                             <label class="radio-item"><input type="radio" name="resolution" id="res4k" value="4k" checked> 4K</label>
-                            <label class="radio-item"><input type="radio" name="resolution" id="res1k" value="1k"> 1080P</label>
+                            <label class="radio-item"><input type="radio" name="resolution" id="res1k" value="1k"> 1K</label>
                         </div>
                     </div>
-                    <!-- 格式在右 -->
-                    <div class="export-item">
-                        <label>格式:</label>
-                        <div class="radio-group row-radio">
+
+                    <!-- 右侧：格式 -->
+                    <div class="export-col">
+                        <label class="main-label">格式:</label>
+                        <div class="radio-group">
                             <label class="radio-item"><input type="radio" name="format" id="fmtJpg" value="jpg" checked> JPG</label>
                             <label class="radio-item"><input type="radio" name="format" id="fmtPng" value="png"> PNG</label>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -580,9 +586,10 @@
             bgImageObj = bgImg;
             resourcesLoaded = true;
 
+            // 隐藏加载遮罩
             if (elements.loadingOverlay) {
                 elements.loadingOverlay.style.opacity = '0';
-                setTimeout(() => elements.loadingOverlay.style.display = 'none', 300);
+                setTimeout(() => elements.loadingOverlay.style.display = 'none', 500);
             }
             
             updatePreview();
@@ -803,4 +810,3 @@
     </script>
 </body>
 </html>
-
