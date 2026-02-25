@@ -190,26 +190,32 @@
             .export-content {
                 display: flex !important;
                 flex-direction: row !important;
-                gap: 10px !important; /* 减小间距 */
-                flex-wrap: nowrap !important; /* 强制不换行 */
+                gap: 10px !important;
+                flex-wrap: nowrap !important;
             }
             .export-item {
                 flex: 1 !important;
-                min-width: 0 !important; /* 允许压缩 */
+                min-width: 0 !important;
             }
             .export-item label {
-                font-size: 0.85rem !important; /* 稍微减小字体 */
+                font-size: 0.85rem !important;
                 margin-bottom: 4px !important;
             }
-            .radio-group {
-                gap: 5px !important;
+            
+            /* ✅ 核心修复：强制导出设置内的单选框组为横排 */
+            .export-content .radio-group {
+                display: flex !important;
+                flex-direction: row !important; /* 强制横排 */
+                gap: 8px !important;
+                flex-wrap: wrap;
             }
-            .radio-item {
-                font-size: 0.8rem !important; /* 减小选项字体 */
+            .export-content .radio-item {
+                font-size: 0.8rem !important;
+                white-space: nowrap;
             }
-            .radio-item input {
-                transform: scale(1.0) !important; /* 减小单选框大小 */
-                margin-right: 2px !important;
+            .export-content .radio-item input {
+                transform: scale(0.9) !important;
+                margin-right: 3px !important;
             }
         }
 
@@ -335,16 +341,16 @@
             <!-- 厅时段和宴席类型左右排列 -->
             <div class="form-row row-desktop-mobile">
                 <label class="form-label">厅时段:</label>
-                <input type="text" id="timeInput" class="form-input" placeholder="例如：奥斯卡晚宴">
+                <input type="text" id="timeInput" class="form-input" placeholder="例：奥斯卡晚宴">
                 
                 <label class="form-label" style="margin-left: 10px;">宴席类型:</label>
-                <input type="text" id="typeInput" class="form-input" placeholder="例如：婚宴">
+                <input type="text" id="typeInput" class="form-input" placeholder="例：婚宴">
             </div>
             
             <div class="form-row">
                 <label class="form-label">新郎姓名:</label>
                 <div class="name-input-group">
-                    <input type="text" id="groomInput" class="name-input" placeholder="例如：张三">
+                    <input type="text" id="groomInput" class="name-input" placeholder="例：“新郎：张三”或“人名”">
                     <div class="size-btn" id="groomMinus">−</div>
                     <div class="size-display" id="groomSizeDisplay">100%</div>
                     <div class="size-btn" id="groomPlus">+</div>
@@ -354,7 +360,7 @@
             <div class="form-row">
                 <label class="form-label">新娘姓名:</label>
                 <div class="name-input-group">
-                    <input type="text" id="brideInput" class="name-input" placeholder="例如：李四">
+                    <input type="text" id="brideInput" class="name-input" placeholder="例：“新娘：李四”或空着">
                     <div class="size-btn" id="brideMinus">−</div>
                     <div class="size-display" id="brideSizeDisplay">100%</div>
                     <div class="size-btn" id="bridePlus">+</div>
@@ -371,9 +377,10 @@
         </div>
 
         <div class="controls-wrapper">
+            <!-- ✅ 修改：删除了 📷 表情 -->
             <div id="cropControls" class="control-group">
                 <div class="control-header">
-                    <h4 class="control-title">📷 图片位置</h4>
+                    <h4 class="control-title">图片位置</h4>
                     <div class="control-actions">
                         <button class="icon-btn reset-btn" id="resetCropBtn" title="重置">🔄</button>
                         <button class="icon-btn" id="toggleCropBtn" title="展开/折叠">+</button>
@@ -391,9 +398,10 @@
                 </div>
             </div>
 
+            <!-- ✅ 修改：删除了 ✍️ 表情 -->
             <div id="nameControls" class="control-group" style="display:none;">
                 <div class="control-header">
-                    <h4 class="control-title">✍️ 姓名位置</h4>
+                    <h4 class="control-title">姓名位置</h4>
                     <div class="control-actions">
                         <button class="icon-btn reset-btn" id="resetNameBtn" title="重置">🔄</button>
                         <button class="icon-btn" id="toggleNameBtn" title="展开/折叠">+</button>
@@ -790,4 +798,3 @@
     </script>
 </body>
 </html>
-
