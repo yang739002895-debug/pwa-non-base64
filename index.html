@@ -169,7 +169,7 @@
             margin-bottom: 0;
         }
         
-        /* ✅ 手机端布局优化 (已清理冗余代码) */
+        /* ✅ 手机端布局优化 */
         @media (max-width: 768px) {
             .form-row { flex-direction: column; align-items: stretch; gap: 5px; }
             .form-label { width: 100%; text-align: left; margin-bottom: 2px; font-weight: bold;}
@@ -178,7 +178,6 @@
             .controls-wrapper { flex-direction: row !important; }
             .control-group { width: 48% !important; padding: 10px; }
             
-            /* 厅时段和宴席类型保持左右 */
             .row-desktop-mobile {
                 flex-direction: row !important;
                 align-items: center !important;
@@ -288,7 +287,6 @@
         .export-content { transition: all 0.3s ease; }
         .export-content.collapsed { display: none; }
         
-        /* ✅ 核心修改：导出设置内部直接 Flex 布局，无需媒体查询强制 */
         .export-inner-flex {
             display: flex;
             gap: 20px;
@@ -297,7 +295,7 @@
         }
         .export-col {
             flex: 1;
-            min-width: 0; /* 允许压缩 */
+            min-width: 0;
         }
         .export-col label.main-label {
             font-weight: bold;
@@ -341,17 +339,16 @@
     <div class="container">
         <h1>
             好莳威汀水台 
-            <span class="version-tag">v1.6</span>
+            <span class="version-tag">v1.7</span>
         </h1>
         
         <div class="form-group">
-            <!-- 厅时段和宴席类型左右排列 -->
             <div class="form-row row-desktop-mobile">
                 <label class="form-label">厅时段:</label>
-                <input type="text" id="timeInput" class="form-input" placeholder="例：奥斯卡晚宴">
+                <input type="text" id="timeInput" class="form-input" placeholder="奥斯卡晚宴">
                 
                 <label class="form-label" style="margin-left: 10px;">宴席类型:</label>
-                <input type="text" id="typeInput" class="form-input" placeholder="例：婚宴">
+                <input type="text" id="typeInput" class="form-input" placeholder="联姻宴">
             </div>
             
             <div class="form-row">
@@ -384,7 +381,6 @@
         </div>
 
         <div class="controls-wrapper">
-            <!-- 图片位置 -->
             <div id="cropControls" class="control-group">
                 <div class="control-header">
                     <h4 class="control-title">图片位置</h4>
@@ -405,7 +401,6 @@
                 </div>
             </div>
 
-            <!-- 姓名位置 -->
             <div id="nameControls" class="control-group" style="display:none;">
                 <div class="control-header">
                     <h4 class="control-title">姓名位置</h4>
@@ -435,17 +430,13 @@
             <button id="refreshBtn" class="btn btn-warning">🔄 刷新预览</button>
         </div>
 
-        <!-- ✅ 导出设置：结构重组，天然左右分布 -->
         <div class="export-options">
             <div class="export-header">
                 <h3 class="export-title">导出设置</h3>
                 <button class="icon-btn" id="toggleExportBtn" title="展开/折叠">+</button>
             </div>
             <div class="export-content collapsed" id="exportContent">
-                <!-- 直接使用 Flex 容器，不再依赖 export-row 和 export-item -->
                 <div class="export-inner-flex">
-                    
-                    <!-- 左侧：分辨率 -->
                     <div class="export-col">
                         <label class="main-label">分辨率:</label>
                         <div class="radio-group">
@@ -453,8 +444,6 @@
                             <label class="radio-item"><input type="radio" name="resolution" id="res1k" value="1k"> 1K</label>
                         </div>
                     </div>
-
-                    <!-- 右侧：格式 -->
                     <div class="export-col">
                         <label class="main-label">格式:</label>
                         <div class="radio-group">
@@ -462,7 +451,6 @@
                             <label class="radio-item"><input type="radio" name="format" id="fmtPng" value="png"> PNG</label>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -586,7 +574,6 @@
             bgImageObj = bgImg;
             resourcesLoaded = true;
 
-            // 隐藏加载遮罩
             if (elements.loadingOverlay) {
                 elements.loadingOverlay.style.opacity = '0';
                 setTimeout(() => elements.loadingOverlay.style.display = 'none', 500);
@@ -677,6 +664,23 @@
             ctx.fillText(text, x, y);
         }
 
+        // ✅ 新增：智能处理姓名间距的函数
+        function processNameSpacing(name) {
+            if (!name) return name;
+            // 检查是否包含“新郎：”或“新娘：”
+            const prefixes = ["新郎：", "新娘："];
+            for (let prefix of prefixes) {
+                if (name.startsWith(prefix)) {
+                    const realName = name.substring(prefix.length);
+                    // 如果冒号后正好是2个字，则在中间加一个全角空格
+                    if (realName.length === 2) {
+                        return prefix + realName[0] + "\u3000" + realName[1];
+                    }
+                }
+            }
+            return name;
+        }
+
         async function generateCompositeImage(isPreview = false) {
             const canvas = document.createElement('canvas');
             let renderW = 3840, renderH = 2160;
@@ -700,8 +704,12 @@
             }
 
             const hallTime = elements.timeInput.value.trim() || "什么厅晚宴";
-            const groom = elements.groomInput.value.trim();
-            const bride = elements.brideInput.value.trim();
+            // ✅ 使用新函数处理姓名
+            const groomRaw = elements.groomInput.value.trim();
+            const brideRaw = elements.brideInput.value.trim();
+            const groom = processNameSpacing(groomRaw);
+            const bride = processNameSpacing(brideRaw);
+            
             const weddingType = elements.typeInput.value.trim() || "没写宴";
             const textColor = "rgba(120, 65, 25, 1)";
 
@@ -715,6 +723,9 @@
             let finalGroomY = baseGroomY + (nameOffsetY * scaleY);
             let finalBrideY = baseBrideY + (nameOffsetY * scaleY);
 
+            // 注意：因为加了空格，字符串长度变了，但视觉上我们希望对齐。
+            // 这里的逻辑保持原样，因为空格也会占用宽度，视觉上会自动撑开。
+            // 如果只有一个名字，稍微下移一点保持居中感
             if (groom && !bride) finalGroomY += 120 * scaleY;
 
             const fontSizeScale = scaleX; 
@@ -810,3 +821,5 @@
     </script>
 </body>
 </html>
+
+
