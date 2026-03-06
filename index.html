@@ -339,7 +339,7 @@
     <div class="container">
         <h1>
             好莳威汀水台 
-            <span class="version-tag">v1.7</span>
+            <span class="version-tag">v2.0</span>
         </h1>
         
         <div class="form-group">
@@ -376,7 +376,8 @@
             <div class="form-row" style="flex-direction: row; align-items: center;">
                 <button id="photoBtn" class="btn btn-primary photo-btn-fixed">🖼️ 选图</button>
                 <span id="photoInfo" class="file-info">未选择</span>
-                <input type="file" id="photoFile" accept="image/*" class="hidden">
+                <!-- ✅ 修改 accept 为明确图片类型 -->
+                <input type="file" id="photoFile" style="display:none;">
             </div>
         </div>
 
@@ -610,14 +611,37 @@
             elements.brideSizeDisplay.textContent = brideScale + '%';
         }
 
+        // ✅ 全新 handlePhotoUpload：严格校验图片格式
         function handlePhotoUpload(event) {
             const file = event.target.files[0];
-            if (!file) return;
+            if (!file) {
+                elements.photoInfo.textContent = "未选择";
+                return;
+            }
+
+            const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+            if (!validImageTypes.includes(file.type)) {
+                alert("❌ 请上传图片格式（JPG/PNG/WEBP/GIF）");
+                event.target.value = ''; // 重置 input
+                elements.photoInfo.textContent = "未选择";
+                userImageBase64 = null;
+                updatePreview();
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 userImageBase64 = e.target.result;
-                elements.photoInfo.textContent = file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name;
+                const displayName = file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name;
+                elements.photoInfo.textContent = displayName;
                 checkNameControls();
+                updatePreview();
+            };
+            reader.onerror = function() {
+                alert("❌ 图片读取失败，请重试");
+                event.target.value = '';
+                elements.photoInfo.textContent = "未选择";
+                userImageBase64 = null;
                 updatePreview();
             };
             reader.readAsDataURL(file);
@@ -664,15 +688,12 @@
             ctx.fillText(text, x, y);
         }
 
-        // ✅ 新增：智能处理姓名间距的函数
         function processNameSpacing(name) {
             if (!name) return name;
-            // 检查是否包含“新郎：”或“新娘：”
             const prefixes = ["新郎：", "新娘："];
             for (let prefix of prefixes) {
                 if (name.startsWith(prefix)) {
                     const realName = name.substring(prefix.length);
-                    // 如果冒号后正好是2个字，则在中间加一个全角空格
                     if (realName.length === 2) {
                         return prefix + realName[0] + "\u3000" + realName[1];
                     }
@@ -704,7 +725,6 @@
             }
 
             const hallTime = elements.timeInput.value.trim() || "什么厅晚宴";
-            // ✅ 使用新函数处理姓名
             const groomRaw = elements.groomInput.value.trim();
             const brideRaw = elements.brideInput.value.trim();
             const groom = processNameSpacing(groomRaw);
@@ -723,9 +743,6 @@
             let finalGroomY = baseGroomY + (nameOffsetY * scaleY);
             let finalBrideY = baseBrideY + (nameOffsetY * scaleY);
 
-            // 注意：因为加了空格，字符串长度变了，但视觉上我们希望对齐。
-            // 这里的逻辑保持原样，因为空格也会占用宽度，视觉上会自动撑开。
-            // 如果只有一个名字，稍微下移一点保持居中感
             if (groom && !bride) finalGroomY += 120 * scaleY;
 
             const fontSizeScale = scaleX; 
