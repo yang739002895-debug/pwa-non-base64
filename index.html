@@ -4,30 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>好莳威汀水台</title>
-    
+
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#f5f5f5">
+    <meta name="theme-color" content="#F2F2F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- iOS「添加到主屏幕」用的图标：不写这两行，iOS 会拿页面截图当图标 -->
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            -webkit-tap-highlight-color: transparent;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+        :root {
+            --bg: #F2F2F7;
+            --card: #FFFFFF;
+            --text: #1C1C1E;
+            --text2: #636366;
+            --text3: #8E8E93;
+            --sep: rgba(60, 60, 67, 0.09);
+            --blue: #007AFF;
+            --green: #34C759;
+            --orange: #FF9500;
+            --input-bg: #F9F9F9;
+            --border: #E5E5EA;
+            --r: 12px;
+            --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+                    "Helvetica Neue", "Microsoft YaHei", sans-serif;
         }
-        
-        /* 🎉 全新加载遮罩样式 */
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            padding: 12px;
+            padding-top: calc(12px + env(safe-area-inset-top, 0px));
+            /* 底部固定栏（CTA 按钮 + 导出长框）的避让 */
+            padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px));
+            -webkit-font-smoothing: antialiased;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .wrap { max-width: 600px; margin: 0 auto; }
+
+        /* ── 加载遮罩 ── */
         #loading-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: #ffffff;
+            background: var(--bg);
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -38,297 +66,472 @@
             text-align: center;
         }
         .loading-icon {
-            width: 120px;
-            height: 120px;
+            width: 104px;
+            height: 104px;
             object-fit: contain;
-            margin-bottom: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 22px;
+            border-radius: 22px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
         .loading-tip {
-            color: #666;
-            font-size: 0.95rem;
+            color: var(--text2);
+            font-size: 14px;
             line-height: 1.6;
             max-width: 300px;
-            background: #f8f9fa;
+            background: var(--card);
             padding: 12px 20px;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-        .loading-tip strong {
-            color: #ff4757;
-            font-weight: 600;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
             border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.02);
         }
-        
-        h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin: 10px 0 20px 0;
-            color: #333;
+        .loading-tip strong { color: #FF3B30; font-weight: 600; }
+
+        /* ── Header ── */
+        .header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            padding: 8px 4px 14px;
         }
-        .version-tag {
-            font-size: 0.8rem;
-            background: #e9ecef;
-            color: #6c757d;
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+        .header .ver {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text3);
+            background: rgba(118, 118, 128, 0.1);
             padding: 2px 8px;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
-        .form-group { margin-bottom: 12px; }
-        .form-row {
+        /* ── Card ── */
+        .card {
+            background: var(--card);
+            border-radius: var(--r);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        /* ── 表单行 ── */
+        .row {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
             gap: 10px;
+            min-height: 40px;
         }
-        .form-label {
-            width: 90px;
-            text-align: right;
-            margin-right: 10px;
-            font-size: 0.95rem;
-            flex-shrink: 0;
-        }
-        .form-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            min-width: 150px;
-        }
-
-        .name-input-group {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex: 1;
-            min-width: 150px;
-        }
-        .name-input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            width: 100%;
-        }
-        .size-btn {
-            width: 32px; height: 38px;
-            border: 1px solid #ddd;
-            background: #f8f9fa;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            flex-shrink: 0;
-        }
-        .size-btn:active { background: #e2e6ea; }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            font-size: 1rem;
-            flex: 1;
-            text-align: center;
-            font-weight: 500;
-        }
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-success { background-color: #28a745; color: white; }
-        .btn-warning { background-color: #ffc107; color: black; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        .photo-btn-fixed {
-            flex: 0 0 auto !important;
-            width: auto !important;
-            max-width: 150px;
-            margin-right: 10px;
-            margin-bottom: 0;
-        }
-        
-        /* ✅ 手机端布局优化 */
-        @media (max-width: 768px) {
-            .form-row { flex-direction: column; align-items: stretch; gap: 5px; }
-            .form-label { width: 100%; text-align: left; margin-bottom: 2px; font-weight: bold;}
-            .form-input, .name-input-group { width: 100%; box-sizing: border-box; }
-            .btn { width: 100%; margin-right: 0; }
-            .controls-wrapper { flex-direction: row !important; }
-            .control-group { width: 48% !important; padding: 10px; }
-            
-            .row-desktop-mobile {
-                flex-direction: row !important;
-                align-items: center !important;
-                gap: 5px !important;
-            }
-            .row-desktop-mobile .form-label {
-                width: auto !important;
-                text-align: right !important;
-                margin-right: 5px !important;
-                margin-bottom: 0 !important;
-                font-weight: bold;
-                font-size: 0.9rem;
-                flex-shrink: 0;
-            }
-            .row-desktop-mobile .form-input {
-                flex: 1 !important;
-                min-width: 100px !important;
-                padding: 8px !important;
-                font-size: 14px !important;
-            }
-        }
-
-        .preview-container {
-            border: 1px solid #ddd;
-            padding: 5px;
-            margin-top: 15px;
-            text-align: center;
-            background: #fafafa;
-            border-radius: 8px;
-            overflow: hidden;
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .preview-image { max-width: 100%; height: auto; display: block; }
-
-        .controls-wrapper {
-            display: flex;
-            gap: 15px;
-            margin: 15px 0;
-        }
-        .control-group {
-            flex: 1;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background: #fff;
-            display: block;
-        }
-        
-        .control-header {
+        .row + .row { margin-top: 2px; padding-top: 2px; }
+        .row-label {
+            /* flex + space-between：文字靠左、冒号贴右缘，3 字（厅时段）和 4 字（宴席类型）的冒号对齐 */
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 10px;
-        }
-        .control-title {
-            margin: 0;
-            font-size: 0.95rem;
-            color: #444;
-            font-weight: bold;
-        }
-        .control-actions { display: flex; align-items: center; gap: 8px; }
-        .icon-btn {
-            background: none; border: 1px solid #ddd; border-radius: 4px;
-            width: 26px; height: 26px; display: flex; align-items: center;
-            justify-content: center; cursor: pointer; font-size: 16px; color: #555; padding: 0;
-        }
-        .icon-btn:hover { background: #f1f1f1; }
-        .icon-btn.reset-btn { color: #007bff; border-color: #007bff; }
-        
-        .control-content { transition: all 0.3s ease; }
-        .control-content.collapsed { display: none; }
-
-        .slider-group { margin-bottom: 12px; }
-        .slider-label-top {
-            display: block;
-            text-align: left;
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 4px;
+            align-items: baseline;
+            font-size: 15px;
             font-weight: 500;
+            color: var(--text);
+            white-space: nowrap;
+            width: 68px;
+            flex-shrink: 0;
         }
-        .slider-wrapper { width: 100%; margin: 0; }
-        input[type=range] { width: 100%; height: 24px; }
-
-        .export-options {
-            margin: 15px 0;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background: #fff;
-        }
-        .export-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 10px;
-        }
-        .export-title { margin: 0; font-size: 1rem; color: #444; font-weight: bold; }
-        .export-content { transition: all 0.3s ease; }
-        .export-content.collapsed { display: none; }
-        
-        .export-inner-flex {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-            width: 100%;
-        }
-        .export-col {
+        .row-label::after { content: ":"; margin-left: 1px; }
+        .row-input {
             flex: 1;
             min-width: 0;
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 15px;
+            font-family: var(--font);
+            color: var(--text);
+            background: var(--input-bg);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
-        .export-col label.main-label {
-            font-weight: bold;
-            font-size: 0.9rem;
-            display: block;
-            margin-bottom: 6px;
-            color: #333;
+        .row-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
+            background: #FFF;
         }
-        
-        .radio-group { 
-            display: flex; 
-            gap: 10px; 
-            flex-wrap: wrap; 
+        .row-input::placeholder { color: #C7C7CC; font-size: 14px; }
+
+        /* ── 姓名行 ── */
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 40px;
         }
-        .radio-item { 
-            display: flex; 
-            align-items: center; 
-            font-size: 0.9rem; 
-            white-space: nowrap; 
+        .name-row + .name-row { margin-top: 2px; padding-top: 2px; }
+        .name-row .row-input { flex: 1; min-width: 0; }
+
+        /* ── 可折叠面板（图片位置 / 姓名位置并排） ── */
+        .panel-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
         }
-        .radio-item input { 
-            margin-right: 4px; 
-            transform: scale(1.1); 
+        .panel {
+            flex: 1;
+            min-width: 0;
+            /* 半宽上限：两个面板常驻并排，各占一半，方框大小稳定不跳变 */
+            max-width: calc(50% - 4px);
+            background: var(--card);
+            border-radius: var(--r);
+            box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            /* 不设 align-self:flex-start：展开时两栏等高（两个面板各 3 条滑杆，天然齐平） */
         }
-        
-        .file-info { margin-left: 10px; color: #666; font-size: 0.9rem; word-break: break-all; line-height: 40px; }
-        .hidden { display: none; }
-        .size-display { font-size: 0.8rem; color: #666; width: 35px; text-align: center; flex-shrink: 0; }
+        /* 展开态：高度锁成等于宽度（正方形）；折叠态不加 .open，只留标题栏高度 */
+        .panel-group.open .panel { aspect-ratio: 1 / 1; }
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+        }
+        .panel-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
+        .reset-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: none;
+            background: rgba(118, 118, 128, 0.08);
+            color: var(--text3);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .reset-btn:active { background: rgba(0, 122, 255, 0.12); color: var(--blue); }
+        .reset-btn svg { width: 14px; height: 14px; }
+
+        .toggle-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: none;
+            background: rgba(118, 118, 128, 0.08);
+            color: var(--blue);
+            font-size: 18px;
+            font-weight: 300;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            line-height: 1;
+            flex-shrink: 0;
+            padding: 0;
+            font-family: var(--font);
+        }
+        .toggle-btn:active { background: rgba(0, 122, 255, 0.12); }
+
+        .panel-body {
+            padding: 0 12px 12px;
+            max-height: 320px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.25s ease;
+            opacity: 1;
+        }
+        .panel-body.collapsed {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+        }
+
+        /* ── 滑杆 ── */
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .slider-row:last-child { margin-bottom: 0; }
+        .slider-lbl {
+            font-size: 12px;
+            color: var(--text3);
+            width: 26px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .slider-wrap {
+            flex: 1;
+            min-width: 0;
+            position: relative;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            outline: none;
+            background: #E5E5EA;
+            margin: 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #FFF;
+            box-shadow: 0 0.5px 3px rgba(0, 0, 0, 0.18), 0 1px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.12s;
+        }
+        input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #FFF; border: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); cursor: pointer;
+        }
+        .slider-val {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
+            min-width: 34px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+        }
+
+        /* ── 预览区 ──
+           横版改造（与竖版「格丽诗方」唯一的布局差异）：
+             · 选图 / 刷新预览 从「预览图右侧竖排」搬到「预览图正下方横排」，高 46（与底栏绿色按钮同高）
+             · 文件名（未选择）接管右侧窄列，写成竖排 8px 小字
+             · 右列 16px、与预览框间距 4px，省下的宽度全部给预览图
+        */
+        .preview-area {
+            background: var(--card);
+            border-radius: var(--r);
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.02);
+        }
+        .preview-layout {
+            display: flex;
+            gap: 4px;                 /* 文件名竖列紧贴预览框 */
+            align-items: stretch;
+        }
+        .preview-left {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;                 /* 预览图 与 按钮行 的间距 */
+        }
+        /* 预览框：沿用旧版朴素样式（浅灰底 + 细边框），无渐变无花纹 */
+        .preview-canvas {
+            padding: 5px;
+            border-radius: 8px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        #previewCanvas { display: block; width: 100%; height: auto; }
+
+        /* 选图 / 刷新预览：预览图正下方，各占一半宽、高 46 */
+        .preview-btns { display: flex; gap: 8px; }
+        .pv-btn {
+            flex: 1;
+            min-width: 0;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: none;
+            border-radius: 10px;
+            font-family: var(--font);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+        .pv-btn:active { transform: scale(0.97); }
+        .pv-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .pick-btn {
+            background: linear-gradient(135deg, #0A84FF, #007AFF);
+            color: #FFF;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+        }
+        .pick-btn:active { opacity: 0.85; }
+        .refresh-btn {
+            background: linear-gradient(180deg, #FFD60A, #FFCC02);
+            color: #1C1C1E;
+            box-shadow: 0 1px 4px rgba(255, 204, 2, 0.25);
+        }
+
+        /* 文件名 / 未选择：右侧 16px 窄列、竖排 8px，靠上对齐 */
+        .preview-right {
+            width: 16px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .photo-info {
+            writing-mode: vertical-rl;
+            align-self: flex-start;
+            max-height: 100%;
+            font-size: 8px;
+            line-height: 8.8px;
+            color: var(--text3);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── 底栏一行式：选项药丸 + 分隔线 + 按钮 ── */
+        .export-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cta-divider {
+            width: 1px;
+            height: 52px;
+            background: #C8C8D0;
+            flex-shrink: 0;
+        }
+
+        /* ── 分段控件（独立药丸，无外框无底槽） ── */
+        .seg {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .seg input { display: none; }
+        .seg label {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--font);
+            color: var(--text2);
+            background: #FFF;
+            border: 0.5px solid var(--border);
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .seg input:checked + label {
+            background: linear-gradient(135deg, #34C759, #30B350);
+            border-color: transparent;
+            color: #FFF;
+            box-shadow: 0 1px 4px rgba(52, 199, 89, 0.25);
+        }
+
+        /* ── 底部固定 CTA ── */
+        .cta-wrap {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+            background: rgba(242, 242, 247, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 0.5px solid var(--sep);
+            z-index: 100;
+        }
+        .cta-inner { max-width: 600px; margin: 0 auto; }
+        .cta-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex: 1;
+            min-width: 0;
+            height: 46px;
+            padding: 0 5px;
+            white-space: nowrap;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #34C759, #30B350);
+            color: #FFF;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--font);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(52, 199, 89, 0.25);
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+        }
+        .cta-btn:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(52, 199, 89, 0.25); }
+        .cta-btn:disabled { opacity: 0.7; }
+        .cta-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* ── iOS 保存图片弹层 ──
+           iOS（尤其是「添加到主屏幕」后）的 <a download> 不可靠：常常只是跳到一张裸图，
+           什么都没保存。所以 iOS 上改为把图片显示出来，让用户长按「存储到照片」，
+           若能调用系统分享面板则提供一键按钮。 */
+        #saveSheet {
+            display: none;
+            position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 9999;
+            background: rgba(0, 0, 0, .74); padding: 16px; box-sizing: border-box;
+        }
+        #saveSheet.show { display: flex; align-items: center; justify-content: center; }
+        #saveSheet .sheet-card {
+            background: #fff; border-radius: 20px; padding: 16px; width: 100%;
+            max-width: 520px; max-height: 100%; box-sizing: border-box;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+        }
+        #saveSheet .sheet-tip { font-size: 14px; color: var(--text2); line-height: 1.6; }
+        #saveSheet .sheet-tip b { color: #FF3B30; }
+        #saveSheet img {
+            width: 100%; height: auto; max-height: 56vh; object-fit: contain;
+            display: block; border-radius: 10px;
+            border: 1px solid var(--border);
+            -webkit-touch-callout: default; user-select: auto;
+        }
+        #saveSheet .sheet-btns { display: flex; gap: 10px; }
+        #saveSheet .sheet-btns button {
+            flex: 1; padding: 13px 8px; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--font);
+        }
+        #saveSheetShare { background: var(--green); color: #fff; }
+        #saveSheetShut { background: rgba(118, 118, 128, 0.12); color: var(--text); }
+
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- 🎉 全新加载遮罩 -->
+    <!-- 加载遮罩 -->
     <div id="loading-overlay">
         <img src="./icon-512.png" alt="Logo" class="loading-icon">
         <div class="loading-tip">
@@ -336,128 +539,173 @@
         </div>
     </div>
 
-    <div class="container">
-        <h1>
-            好莳威汀水台 
-            <span class="version-tag">v2.0</span>
-        </h1>
-        
-        <div class="form-group">
-            <div class="form-row row-desktop-mobile">
-                <label class="form-label">厅时段:</label>
-                <input type="text" id="timeInput" class="form-input" placeholder="奥斯卡晚宴">
-                
-                <label class="form-label" style="margin-left: 10px;">宴席类型:</label>
-                <input type="text" id="typeInput" class="form-input" placeholder="联姻宴">
+    <div class="wrap">
+
+        <!-- Header -->
+        <div class="header">
+            <h1>好莳威汀水台</h1>
+            <span class="ver">v3.10</span>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="card">
+            <div class="row">
+                <label class="row-label" for="timeInput">厅时段</label>
+                <input type="text" id="timeInput" class="row-input" placeholder="例：“奥斯卡午宴”">
             </div>
-            
-            <div class="form-row">
-                <label class="form-label">新郎姓名:</label>
-                <div class="name-input-group">
-                    <input type="text" id="groomInput" class="name-input" placeholder="例：“新郎：张三”或“人名”">
-                    <div class="size-btn" id="groomMinus">−</div>
-                    <div class="size-display" id="groomSizeDisplay">100%</div>
-                    <div class="size-btn" id="groomPlus">+</div>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <label class="form-label">新娘姓名:</label>
-                <div class="name-input-group">
-                    <input type="text" id="brideInput" class="name-input" placeholder="例：“新娘：李四”或空着">
-                    <div class="size-btn" id="brideMinus">−</div>
-                    <div class="size-display" id="brideSizeDisplay">100%</div>
-                    <div class="size-btn" id="bridePlus">+</div>
-                </div>
+            <div class="row">
+                <label class="row-label" for="typeInput">宴席类型</label>
+                <input type="text" id="typeInput" class="row-input" placeholder="例：“联姻宴”">
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="form-row" style="flex-direction: row; align-items: center;">
-                <button id="photoBtn" class="btn btn-primary photo-btn-fixed">🖼️ 选图</button>
-                <span id="photoInfo" class="file-info">未选择</span>
-                <!-- ✅ 修改 accept 为明确图片类型 -->
-                <input type="file" id="photoFile" style="display:none;">
+        <!-- 姓名 -->
+        <div class="card">
+            <div class="name-row">
+                <label class="row-label" for="groomInput">新郎姓名</label>
+                <input type="text" id="groomInput" class="row-input" placeholder="例：“新郎：张三”或“人名”">
+            </div>
+            <div class="name-row">
+                <label class="row-label" for="brideInput">新娘姓名</label>
+                <input type="text" id="brideInput" class="row-input" placeholder="例：“新娘：李四”或空着">
             </div>
         </div>
 
-        <div class="controls-wrapper">
-            <div id="cropControls" class="control-group">
-                <div class="control-header">
-                    <h4 class="control-title">图片位置</h4>
-                    <div class="control-actions">
-                        <button class="icon-btn reset-btn" id="resetCropBtn" title="重置">🔄</button>
-                        <button class="icon-btn" id="toggleCropBtn" title="展开/折叠">+</button>
+        <!-- 位置调整：并排两栏，折叠联动。
+             图片位置：左右 / 上下 / 缩放；姓名位置：左右 / 上下 / 字号 -->
+        <div class="panel-group" id="posGroup">
+            <div class="panel">
+                <div class="panel-head" id="cropHead">
+                    <span class="panel-title">
+                        <button type="button" class="reset-btn" id="resetCropBtn" title="重置">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        </button>
+                        图片位置
+                    </span>
+                    <div class="panel-actions">
+                        <button type="button" class="toggle-btn" id="toggleCropBtn" title="展开/折叠">+</button>
                     </div>
                 </div>
-                <div class="control-content collapsed" id="cropContent">
-                    <div class="slider-group">
-                        <label class="slider-label-top">左右</label>
-                        <div class="slider-wrapper"><input type="range" id="hSlider" min="-500" max="500" value="0" step="25"></div>
-                    </div>
-                    <div class="slider-group">
-                        <label class="slider-label-top">上下</label>
-                        <div class="slider-wrapper"><input type="range" id="vSlider" min="-500" max="500" value="0" step="25"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="nameControls" class="control-group" style="display:none;">
-                <div class="control-header">
-                    <h4 class="control-title">姓名位置</h4>
-                    <div class="control-actions">
-                        <button class="icon-btn reset-btn" id="resetNameBtn" title="重置">🔄</button>
-                        <button class="icon-btn" id="toggleNameBtn" title="展开/折叠">+</button>
-                    </div>
-                </div>
-                <div class="control-content collapsed" id="nameContent">
-                    <div class="slider-group">
-                        <label class="slider-label-top">左右</label>
-                        <div class="slider-wrapper"><input type="range" id="nameHSlider" min="-1000" max="1000" value="0" step="10"></div>
-                    </div>
-                    <div class="slider-group">
-                        <label class="slider-label-top">上下</label>
-                        <div class="slider-wrapper"><input type="range" id="nameVSlider" min="-1000" max="1000" value="0" step="10"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="preview-container">
-            <canvas id="previewCanvas" class="preview-image"></canvas>
-        </div>
-
-        <div class="form-group" style="margin-top: 15px;">
-            <button id="refreshBtn" class="btn btn-warning">🔄 刷新预览</button>
-        </div>
-
-        <div class="export-options">
-            <div class="export-header">
-                <h3 class="export-title">导出设置</h3>
-                <button class="icon-btn" id="toggleExportBtn" title="展开/折叠">+</button>
-            </div>
-            <div class="export-content collapsed" id="exportContent">
-                <div class="export-inner-flex">
-                    <div class="export-col">
-                        <label class="main-label">分辨率:</label>
-                        <div class="radio-group">
-                            <label class="radio-item"><input type="radio" name="resolution" id="res4k" value="4k" checked> 4K</label>
-                            <label class="radio-item"><input type="radio" name="resolution" id="res1k" value="1k"> 1K</label>
+                <div class="panel-body collapsed" id="cropContent">
+                    <div class="slider-row">
+                        <span class="slider-lbl">左右</span>
+                        <div class="slider-wrap">
+                            <input type="range" id="hSlider" min="-2000" max="2000" value="0" step="20">
+                            <span class="slider-val" id="hVal">0</span>
                         </div>
                     </div>
-                    <div class="export-col">
-                        <label class="main-label">格式:</label>
-                        <div class="radio-group">
-                            <label class="radio-item"><input type="radio" name="format" id="fmtJpg" value="jpg" checked> JPG</label>
-                            <label class="radio-item"><input type="radio" name="format" id="fmtPng" value="png"> PNG</label>
+                    <div class="slider-row">
+                        <span class="slider-lbl">上下</span>
+                        <div class="slider-wrap">
+                            <input type="range" id="vSlider" min="-2000" max="2000" value="0" step="20">
+                            <span class="slider-val" id="vVal">0</span>
+                        </div>
+                    </div>
+                    <div class="slider-row">
+                        <span class="slider-lbl">缩放</span>
+                        <div class="slider-wrap">
+                            <input type="range" id="zSlider" min="100" max="300" value="100" step="5">
+                            <span class="slider-val" id="zVal">100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" id="nameControls">
+                <div class="panel-head" id="nameHead">
+                    <span class="panel-title">
+                        <button type="button" class="reset-btn" id="resetNameBtn" title="重置">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        </button>
+                        姓名位置
+                    </span>
+                    <div class="panel-actions">
+                        <button type="button" class="toggle-btn" id="toggleNameBtn" title="展开/折叠">+</button>
+                    </div>
+                </div>
+                <div class="panel-body collapsed" id="nameContent">
+                    <div class="slider-row">
+                        <span class="slider-lbl">左右</span>
+                        <div class="slider-wrap">
+                            <input type="range" id="nameHSlider" min="-1000" max="1000" value="0" step="10">
+                            <span class="slider-val" id="nameHVal">0</span>
+                        </div>
+                    </div>
+                    <div class="slider-row">
+                        <span class="slider-lbl">上下</span>
+                        <div class="slider-wrap">
+                            <input type="range" id="nameVSlider" min="-1000" max="1000" value="0" step="10">
+                            <span class="slider-val" id="nameVVal">0</span>
+                        </div>
+                    </div>
+                    <div class="slider-row">
+                        <span class="slider-lbl">字号</span>
+                        <div class="slider-wrap">
+                            <input type="range" id="nameSizeSlider" min="20" max="300" value="100" step="10">
+                            <span class="slider-val" id="nameSizeVal">100%</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <button id="generateBtn" class="btn btn-success" style="font-size: 1.1rem; font-weight: bold;">💾 生成并保存图片</button>
+        <!-- 预览区（横版：按钮搬到预览图下方，右列只放竖排文件名） -->
+        <div class="preview-area">
+            <div class="preview-layout">
+                <div class="preview-left">
+                    <div class="preview-canvas" id="previewWrap">
+                        <canvas id="previewCanvas"></canvas>
+                    </div>
+                    <div class="preview-btns">
+                        <button type="button" class="pv-btn pick-btn" id="photoBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                            <span>选图</span>
+                        </button>
+                        <button type="button" class="pv-btn refresh-btn" id="refreshBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            <span>刷新预览</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-right">
+                    <div class="photo-info" id="photoInfo">未选择</div>
+                </div>
+            </div>
+            <input type="file" id="photoFile" accept="image/*" style="display:none;">
+        </div>
+
+    </div>
+
+    <!-- 底部固定 CTA -->
+    <div class="cta-wrap">
+        <div class="cta-inner">
+            <div class="export-row">
+                <div class="seg">
+                    <input type="radio" name="resolution" id="res4k" value="4k" checked><label for="res4k">4K</label>
+                    <input type="radio" name="resolution" id="res1k" value="1k"><label for="res1k">1K</label>
+                </div>
+                <div class="seg">
+                    <input type="radio" name="format" id="fmtJpg" value="jpg" checked><label for="fmtJpg">JPG</label>
+                    <input type="radio" name="format" id="fmtPng" value="png"><label for="fmtPng">PNG</label>
+                </div>
+                <span class="cta-divider"></span>
+                <button type="button" class="cta-btn" id="generateBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    <span id="generateBtnText">生成并保存图片</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- iOS / 已安装到主屏的 PWA：点「生成并保存图片」后弹出，长按图片即可存到相册 -->
+    <div id="saveSheet">
+        <div class="sheet-card">
+            <div class="sheet-tip">图片已生成。iPhone / iPad 上<b>长按下面这张图</b>，再选「存储到照片」即可保存。</div>
+            <img id="saveSheetImg" alt="生成的请柬">
+            <div class="sheet-btns">
+                <button type="button" id="saveSheetShare">📤 存到相册 / 分享</button>
+                <button type="button" id="saveSheetShut">关闭</button>
+            </div>
         </div>
     </div>
 
@@ -472,17 +720,61 @@
     </script>
 
     <script>
+        /* ================================================================
+           底板：本公司横版 3840 × 2160（pwa-non-base64 原版 back.png）
+           UI 外壳来自竖版「格丽诗方 v3.10」，本文件只换了：
+             · 画布尺寸 / 文字坐标 / 照片窗口  → 沿用本公司横版原有数值（未重新量）
+             · 预览区布局 → 选图·刷新预览搬到预览图下方，右列改竖排文件名
+             · 姓名位置的「−/100%/+」步进器 → 换成滑杆（合并成一个字号比例）
+             · 图片位置新增第 3 条「缩放」滑杆
+           导出分辨率：4K = 3840×2160，1K = 1920×1080
+           ================================================================ */
         const BACKGROUND_URL = "./back.png";
+        // file:// 双击打开时改用同目录的 back-data.js（内嵌底板的 base64 版），
+        // 否则外链图片会污染画布、导出被浏览器拒绝。
+        // ★ 换了 back.png 之后，需要重新生成 back-data.js —— PowerShell 一行：
+        //   $b=[Convert]::ToBase64String([IO.File]::ReadAllBytes("back.png"));
+        //   [IO.File]::WriteAllText("back-data.js",'window.__BACK_DATA_URL="data:image/png;base64,'+$b+'";',(New-Object Text.UTF8Encoding($false)))
         const FONT_URL = "./FZXiaoBiaoSong-B05S.woff2";
         const BASE_FONT_SIZE = 192;
-        
+
+        const CANVAS_W = 3840;
+        const CANVAS_H = 2160;
+        const TEXT_COLOR = "rgba(120, 65, 25, 1)";          // 横版原版棕色（未改动）
+
+        // 文字位置（底板 3840×2160 坐标系）—— 全部沿用本公司横版原有数值
+        const POS = {
+            timeX: 280,                    // 厅时段：左起点
+            timeBaselineY: 490 + 148,      // 厅时段：基线 y
+            typeX: 3100,                   // 宴席类型：左起点（右上角）
+            typeBaselineY: 100 + 167,      // 宴席类型：基线 y
+            nameX: 650 - 536,              // 姓名：左起点（可被「姓名位置·左右」推走）
+            groomBaselineY: 1110 + 158,    // 新郎：基线 y
+            brideBaselineY: 1380 + 158,    // 新娘：基线 y
+            soloNameShift: 120             // 只填新郎一人时，整行自动下移
+        };
+        const FONT_SIZE = { time: 166, type: 220 };
+
+        // 照片窗口：2544 × 1760，等比覆盖裁切后**贴右下角**
+        const PHOTO = { w: 2544, h: 1760 };
+
+        // 导出分辨率
+        const RES_HI = { width: CANVAS_W, height: CANVAS_H };
+        const RES_STD = { width: Math.round(CANVAS_W / 2), height: Math.round(CANVAS_H / 2) };
+
+        // 姓名输入形如「新郎：张三」（名字两个字）时，中间插入一个全角空格
+        // 这是原版 v2.0 的行为；置为 false 则完全按用户输入原样输出
+        const SPACING_TWO_CHAR_NAME = true;
+
         let userImageBase64 = null;
-        let cropOffsetX = 0, cropOffsetY = 0;
+        let cropOffsetX = 0, cropOffsetY = 0, cropZoom = 100;
         let nameOffsetX = 0, nameOffsetY = 0;
-        let groomScale = 100, brideScale = 100;
+        let nameScale = 100;   // 新郎/新娘共用一个字号比例（原来是两个独立步进器）
         let customFontFamily = 'serif';
         let resourcesLoaded = false;
         let bgImageObj = null;
+        // 底板是否以「已污染画布」的方式加载（本地 file:// 双击打开时会发生）
+        let bgTainted = false;
 
         const elements = {
             timeInput: document.getElementById('timeInput'),
@@ -492,57 +784,117 @@
             photoBtn: document.getElementById('photoBtn'),
             photoFile: document.getElementById('photoFile'),
             photoInfo: document.getElementById('photoInfo'),
-            cropControls: document.getElementById('cropControls'),
             cropContent: document.getElementById('cropContent'),
             toggleCropBtn: document.getElementById('toggleCropBtn'),
             resetCropBtn: document.getElementById('resetCropBtn'),
+            zSlider: document.getElementById('zSlider'),
             hSlider: document.getElementById('hSlider'),
             vSlider: document.getElementById('vSlider'),
-            nameControls: document.getElementById('nameControls'),
             nameContent: document.getElementById('nameContent'),
             toggleNameBtn: document.getElementById('toggleNameBtn'),
             resetNameBtn: document.getElementById('resetNameBtn'),
             nameHSlider: document.getElementById('nameHSlider'),
             nameVSlider: document.getElementById('nameVSlider'),
-            toggleExportBtn: document.getElementById('toggleExportBtn'),
-            exportContent: document.getElementById('exportContent'),
             previewCanvas: document.getElementById('previewCanvas'),
+            previewWrap: document.getElementById('previewWrap'),
             refreshBtn: document.getElementById('refreshBtn'),
             res4k: document.getElementById('res4k'),
             res1k: document.getElementById('res1k'),
             fmtJpg: document.getElementById('fmtJpg'),
             fmtPng: document.getElementById('fmtPng'),
             generateBtn: document.getElementById('generateBtn'),
-            groomMinus: document.getElementById('groomMinus'),
-            groomPlus: document.getElementById('groomPlus'),
-            groomSizeDisplay: document.getElementById('groomSizeDisplay'),
-            brideMinus: document.getElementById('brideMinus'),
-            bridePlus: document.getElementById('bridePlus'),
-            brideSizeDisplay: document.getElementById('brideSizeDisplay'),
+            generateBtnText: document.getElementById('generateBtnText'),
+            nameSizeSlider: document.getElementById('nameSizeSlider'),
+            nameSizeVal: document.getElementById('nameSizeVal'),
             loadingOverlay: document.getElementById('loading-overlay')
         };
 
-        function initCollapsibles() {
-            const setupToggle = (btn, content, defaultOpen = false) => {
-                if (!defaultOpen) content.classList.add('collapsed');
-                btn.textContent = defaultOpen ? '−' : '+';
-                btn.addEventListener('click', () => {
-                    const isCollapsed = content.classList.contains('collapsed');
-                    content.classList.toggle('collapsed');
-                    btn.textContent = isCollapsed ? '−' : '+';
-                });
-            };
-            setupToggle(elements.toggleCropBtn, elements.cropContent, false);
-            setupToggle(elements.toggleNameBtn, elements.nameContent, false);
-            setupToggle(elements.toggleExportBtn, elements.exportContent, false);
+        /* 预览画布实际可用宽度：容器内容宽 − 画框内边距（5px × 2） */
+        function previewAvailWidth() {
+            const wrap = elements.previewWrap;
+            const cs = getComputedStyle(wrap);
+            const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+            return Math.max(80, Math.floor(wrap.clientWidth - pad));
+        }
 
-            elements.resetCropBtn.addEventListener('click', () => {
+        /* 滑杆旁边的数值 */
+        function syncSliderLabels() {
+            document.getElementById('zVal').textContent = cropZoom + '%';
+            document.getElementById('hVal').textContent = (cropOffsetX > 0 ? '+' : '') + cropOffsetX;
+            document.getElementById('vVal').textContent = (cropOffsetY > 0 ? '+' : '') + cropOffsetY;
+            document.getElementById('nameHVal').textContent = (nameOffsetX > 0 ? '+' : '') + nameOffsetX;
+            document.getElementById('nameVVal').textContent = (nameOffsetY > 0 ? '+' : '') + nameOffsetY;
+            document.getElementById('nameSizeVal').textContent = nameScale + '%';
+        }
+
+        function initCollapsibles() {
+            /* 图片位置 / 姓名位置：并排两栏，折叠联动 —— 点任意一个，两个一起收起/展开 */
+            const pair = [
+                { body: elements.cropContent, btn: elements.toggleCropBtn },
+                { body: elements.nameContent, btn: elements.toggleNameBtn }
+            ];
+            const posGroup = document.getElementById('posGroup');
+            const setPair = (collapsed) => {
+                pair.forEach(p => {
+                    p.body.classList.toggle('collapsed', collapsed);
+                    p.btn.textContent = collapsed ? '+' : '−';
+                });
+                // 展开时把两个面板锁成正方形；折叠时摘掉 .open，只留标题栏
+                if (posGroup) posGroup.classList.toggle('open', !collapsed);
+            };
+            const flipPair = () => setPair(!elements.cropContent.classList.contains('collapsed'));
+
+            setPair(true);                                    // 默认收起
+            elements.toggleCropBtn.addEventListener('click', (e) => { e.stopPropagation(); flipPair(); });
+            elements.toggleNameBtn.addEventListener('click', (e) => { e.stopPropagation(); flipPair(); });
+            document.getElementById('cropHead').addEventListener('click', flipPair);
+            document.getElementById('nameHead').addEventListener('click', flipPair);
+
+            elements.resetCropBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.zSlider.value = 100;
                 elements.hSlider.value = 0; elements.vSlider.value = 0;
-                cropOffsetX = 0; cropOffsetY = 0; updatePreview();
+                cropZoom = 100; cropOffsetX = 0; cropOffsetY = 0;
+                syncSliderLabels(); updatePreview();
             });
-            elements.resetNameBtn.addEventListener('click', () => {
+            elements.resetNameBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 elements.nameHSlider.value = 0; elements.nameVSlider.value = 0;
-                nameOffsetX = 0; nameOffsetY = 0; updatePreview();
+                elements.nameSizeSlider.value = 100;
+                nameOffsetX = 0; nameOffsetY = 0; nameScale = 100;
+                syncSliderLabels(); updatePreview();
+            });
+        }
+
+        /* 加载底板。
+           useCORS=true：走跨源匿名请求，成功后画布不会被「污染」，导出才能用；
+           file:// 双击打开时页面 origin 是 null，CORS 请求会被浏览器直接拒绝，
+           此时退回普通加载 —— 底板仍能显示，但画布被污染、无法导出，界面上会给出提示。
+           注意：crossOrigin 必须在 src 之前设置，写在后面不生效。 */
+        function loadBgImage(url, useCORS) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                if (useCORS) img.crossOrigin = "anonymous";   // 必须在 src 之前
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = url;
+            });
+        }
+
+        /* file:// 场景下改用内嵌底板：动态加载同目录的 back-data.js，取出 data: URL。
+           data: URL 不算跨源，所以画布不会被污染，双击打开也能正常导出。
+           这里用 script 标签而不是 fetch —— file:// 下 fetch 会被浏览器直接拒绝。 */
+        function loadBgFromDataScript() {
+            return new Promise((resolve) => {
+                if (window.__BACK_DATA_URL) {
+                    resolve(loadBgImage(window.__BACK_DATA_URL, false));
+                    return;
+                }
+                const s = document.createElement('script');
+                s.src = './back-data.js';
+                s.onload = () => resolve(window.__BACK_DATA_URL ? loadBgImage(window.__BACK_DATA_URL, false) : null);
+                s.onerror = () => resolve(null);
+                document.head.appendChild(s);
             });
         }
 
@@ -560,17 +912,24 @@
             })();
 
             const loadBgPromise = (async () => {
-                const img = new Image();
-                img.src = BACKGROUND_URL;
-                img.crossOrigin = "Anonymous";
-                return new Promise((resolve) => {
-                    img.onload = () => resolve(img);
-                    img.onerror = () => resolve(null);
-                });
+                // 1) file:// 双击打开：外链图片会被浏览器判为跨源，画布被「污染」→ 无法导出。
+                //    改用同目录的 back-data.js（data: URL 不算跨源），画布保持干净。
+                if (location.protocol === 'file:') {
+                    const dataImg = await loadBgFromDataScript();
+                    if (dataImg) { bgTainted = false; return dataImg; }
+                }
+                // 2) 常规：按 CORS 方式加载外链底板，成功则画布不污染，导出可用。
+                const withCORS = await loadBgImage(BACKGROUND_URL, true);
+                if (withCORS) { bgTainted = false; return withCORS; }
+                // 3) 兜底：退回普通加载，至少保证预览能看到底板；
+                //    此时浏览器会禁止导出，导出时会给出中文提示。
+                const plain = await loadBgImage(BACKGROUND_URL, false);
+                bgTainted = !!plain;
+                return plain;
             })();
 
             const [fontFamily, bgImg] = await Promise.all([loadFontPromise, loadBgPromise]);
-            
+
             customFontFamily = fontFamily;
             bgImageObj = bgImg;
             resourcesLoaded = true;
@@ -579,7 +938,7 @@
                 elements.loadingOverlay.style.opacity = '0';
                 setTimeout(() => elements.loadingOverlay.style.display = 'none', 500);
             }
-            
+
             updatePreview();
         }
 
@@ -587,31 +946,42 @@
             initCollapsibles();
             elements.photoBtn.addEventListener('click', () => elements.photoFile.click());
             elements.photoFile.addEventListener('change', handlePhotoUpload);
-            
-            elements.hSlider.addEventListener('input', (e) => { cropOffsetX = parseInt(e.target.value); updatePreview(); });
-            elements.vSlider.addEventListener('input', (e) => { cropOffsetY = parseInt(e.target.value); updatePreview(); });
-            elements.nameHSlider.addEventListener('input', (e) => { nameOffsetX = parseInt(e.target.value); updatePreview(); });
-            elements.nameVSlider.addEventListener('input', (e) => { nameOffsetY = parseInt(e.target.value); updatePreview(); });
 
-            elements.groomPlus.addEventListener('click', () => { groomScale = Math.min(groomScale + 10, 300); updateSizeUI(); updatePreview(); });
-            elements.groomMinus.addEventListener('click', () => { groomScale = Math.max(groomScale - 10, 20); updateSizeUI(); updatePreview(); });
-            elements.bridePlus.addEventListener('click', () => { brideScale = Math.min(brideScale + 10, 300); updateSizeUI(); updatePreview(); });
-            elements.brideMinus.addEventListener('click', () => { brideScale = Math.max(brideScale - 10, 20); updateSizeUI(); updatePreview(); });
+            elements.zSlider.addEventListener('input', (e) => { cropZoom = parseInt(e.target.value); syncSliderLabels(); updatePreview(); });
+            elements.hSlider.addEventListener('input', (e) => { cropOffsetX = parseInt(e.target.value); syncSliderLabels(); updatePreview(); });
+            elements.vSlider.addEventListener('input', (e) => { cropOffsetY = parseInt(e.target.value); syncSliderLabels(); updatePreview(); });
+            elements.nameHSlider.addEventListener('input', (e) => { nameOffsetX = parseInt(e.target.value); syncSliderLabels(); updatePreview(); });
+            elements.nameVSlider.addEventListener('input', (e) => { nameOffsetY = parseInt(e.target.value); syncSliderLabels(); updatePreview(); });
 
-            elements.refreshBtn.addEventListener('click', updatePreview);
+            elements.nameSizeSlider.addEventListener('input', (e) => { nameScale = parseInt(e.target.value); syncSliderLabels(); updatePreview(); });
+
+            // 刷新预览：设计稿式的「淡出 + 缩一下」动效
+            elements.refreshBtn.addEventListener('click', () => {
+                const w = elements.previewWrap;
+                w.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                w.style.opacity = '0.4';
+                w.style.transform = 'scale(0.97)';
+                setTimeout(() => {
+                    updatePreview();
+                    w.style.opacity = '1';
+                    w.style.transform = 'scale(1)';
+                }, 240);
+            });
+
             elements.generateBtn.addEventListener('click', generateImage);
-            
+
             [elements.timeInput, elements.groomInput, elements.brideInput, elements.typeInput].forEach(input => {
                 input.addEventListener('input', updatePreview);
             });
         }
 
-        function updateSizeUI() {
-            elements.groomSizeDisplay.textContent = groomScale + '%';
-            elements.brideSizeDisplay.textContent = brideScale + '%';
+        /* 文件名太长时中间省略：前 8 … 后 4 */
+        function formatFileName(name) {
+            if (!name) return "未选择";
+            if (name.length <= 20) return name;
+            return name.slice(0, 8) + '…' + name.slice(-4);
         }
 
-        // ✅ 全新 handlePhotoUpload：严格校验图片格式
         function handlePhotoUpload(event) {
             const file = event.target.files[0];
             if (!file) {
@@ -622,7 +992,7 @@
             const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
             if (!validImageTypes.includes(file.type)) {
                 alert("❌ 请上传图片格式（JPG/PNG/WEBP/GIF）");
-                event.target.value = ''; // 重置 input
+                event.target.value = '';
                 elements.photoInfo.textContent = "未选择";
                 userImageBase64 = null;
                 updatePreview();
@@ -632,9 +1002,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 userImageBase64 = e.target.result;
-                const displayName = file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name;
-                elements.photoInfo.textContent = displayName;
-                checkNameControls();
+                elements.photoInfo.textContent = formatFileName(file.name);
                 updatePreview();
             };
             reader.onerror = function() {
@@ -647,32 +1015,36 @@
             reader.readAsDataURL(file);
         }
 
-        function checkNameControls() {
-            const hasName = elements.groomInput.value.trim() || elements.brideInput.value.trim();
-            elements.nameControls.style.display = hasName ? 'block' : 'none';
-        }
-
         function getResolution() {
-            if (elements.res4k.checked) return { width: 3840, height: 2160 };
-            return { width: 1920, height: 1080 };
+            if (elements.res4k.checked) return RES_HI;
+            return RES_STD;
         }
 
         function loadFont(size) { return `${size}px "${customFontFamily}"`; }
 
-        function cropToTarget(img, targetW = 2544, targetH = 1760) {
+        /* 等比覆盖裁切到目标尺寸；可再叠加用户缩放与平移（全部在目标像素尺度上计算）。
+           zoomPct = 100 时行为与横版原版 cropToTarget 完全一致（不加缩放）。 */
+        function cropToTarget(img, targetW, targetH, zoomPct, offX, offY) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const ratio = targetW / targetH;
             const origRatio = img.width / img.height;
-            let newW, newH;
-            if (origRatio > ratio) { newH = targetH; newW = newH * origRatio; }
-            else { newW = targetW; newH = newW / origRatio; }
+            let baseW, baseH;
+            if (origRatio > ratio) { baseH = targetH; baseW = baseH * origRatio; }
+            else { baseW = targetW; baseH = baseW / origRatio; }
+
+            const z = Math.max(1, zoomPct / 100);
+            const newW = Math.round(baseW * z);
+            const newH = Math.round(baseH * z);
+
             canvas.width = newW; canvas.height = newH;
             ctx.drawImage(img, 0, 0, newW, newH);
+
             let left = (newW - targetW) / 2;
             let top = (newH - targetH) / 2;
-            left = Math.max(0, Math.min(left + cropOffsetX, newW - targetW));
-            top = Math.max(0, Math.min(top + cropOffsetY, newH - targetH));
+            left = Math.max(0, Math.min(left + offX, newW - targetW));
+            top = Math.max(0, Math.min(top + offY, newH - targetH));
+
             const cropCanvas = document.createElement('canvas');
             cropCanvas.width = targetW; cropCanvas.height = targetH;
             cropCanvas.getContext('2d').drawImage(canvas, left, top, targetW, targetH, 0, 0, targetW, targetH);
@@ -682,6 +1054,7 @@
         function drawText(ctx, x, y, text, font, fill) {
             ctx.font = font; ctx.fillStyle = fill; ctx.fillText(text, x, y);
         }
+        /* 轻描边模拟加粗（厅时段用） */
         function drawBoldText(ctx, x, y, text, font, fill) {
             ctx.font = font; ctx.fillStyle = fill;
             [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]].forEach(([dx,dy]) => ctx.fillText(text, x+dx, y+dy));
@@ -690,6 +1063,7 @@
 
         function processNameSpacing(name) {
             if (!name) return name;
+            if (!SPACING_TWO_CHAR_NAME) return name;
             const prefixes = ["新郎：", "新娘："];
             for (let prefix of prefixes) {
                 if (name.startsWith(prefix)) {
@@ -704,18 +1078,17 @@
 
         async function generateCompositeImage(isPreview = false) {
             const canvas = document.createElement('canvas');
-            let renderW = 3840, renderH = 2160;
+            let renderW = CANVAS_W, renderH = CANVAS_H;
             if (isPreview) {
-                const containerW = elements.previewCanvas.parentElement.clientWidth;
-                renderW = Math.min(1920, containerW * 2); 
-                renderH = Math.floor(renderW * (2160/3840));
+                // 预览位图按 2× 渲染（显示尺寸不变，高清屏不糊）
+                renderW = Math.round(Math.min(1920, Math.max(360, previewAvailWidth() * 2)));
+                renderH = Math.round(renderW * (CANVAS_H / CANVAS_W));
             }
 
             canvas.width = renderW;
             canvas.height = renderH;
             const ctx = canvas.getContext('2d');
-            const scaleX = renderW / 3840;
-            const scaleY = renderH / 2160;
+            const s = renderW / CANVAS_W;      // 统一缩放比（X / Y 同值，画布本来就是 16:9）
 
             if (bgImageObj) {
                 ctx.drawImage(bgImageObj, 0, 0, renderW, renderH);
@@ -729,37 +1102,40 @@
             const brideRaw = elements.brideInput.value.trim();
             const groom = processNameSpacing(groomRaw);
             const bride = processNameSpacing(brideRaw);
-            
+
             const weddingType = elements.typeInput.value.trim() || "没写宴";
-            const textColor = "rgba(120, 65, 25, 1)";
 
-            const baseX = (650 - 536) * scaleX; 
-            const baseGroomY = (1110 + 158) * scaleY;
-            const baseBrideY = (1380 + 158) * scaleY;
-            const baseTimeX = 280 * scaleX, baseTimeY = (490 + 148) * scaleY;
-            const baseTypeX = 3100 * scaleX, baseTypeY = (100 + 167) * scaleY;
+            // 厅时段（加粗，166px）
+            if (hallTime) {
+                drawBoldText(ctx, POS.timeX * s, POS.timeBaselineY * s,
+                             hallTime, loadFont(FONT_SIZE.time * s), TEXT_COLOR);
+            }
 
-            const finalX = baseX + (nameOffsetX * scaleX);
-            let finalGroomY = baseGroomY + (nameOffsetY * scaleY);
-            let finalBrideY = baseBrideY + (nameOffsetY * scaleY);
+            // 宴席类型（220px，右上角，左起点固定）
+            if (weddingType) {
+                drawText(ctx, POS.typeX * s, POS.typeBaselineY * s,
+                         weddingType, loadFont(FONT_SIZE.type * s), TEXT_COLOR);
+            }
 
-            if (groom && !bride) finalGroomY += 120 * scaleY;
+            // 姓名：新郎 / 新娘分两行，左起点相同；只有新郎一人时整体下移 120
+            const finalX = (POS.nameX + nameOffsetX) * s;
+            const nameFontSize = BASE_FONT_SIZE * (nameScale / 100) * s;
+            let groomY = POS.groomBaselineY + nameOffsetY;
+            let brideY = POS.brideBaselineY + nameOffsetY;
+            if (groom && !bride) groomY += POS.soloNameShift;
 
-            const fontSizeScale = scaleX; 
-            if (hallTime) drawBoldText(ctx, baseTimeX, baseTimeY, hallTime, loadFont(166 * fontSizeScale), textColor);
-            if (weddingType) drawText(ctx, baseTypeX, baseTypeY, weddingType, loadFont(220 * fontSizeScale), textColor);
+            if (groom) drawText(ctx, finalX, groomY * s, groom, loadFont(nameFontSize), TEXT_COLOR);
+            if (bride) drawText(ctx, finalX, brideY * s, bride, loadFont(nameFontSize), TEXT_COLOR);
 
-            if (groom) drawText(ctx, finalX, finalGroomY, groom, loadFont(BASE_FONT_SIZE * (groomScale/100) * fontSizeScale), textColor);
-            if (bride) drawText(ctx, finalX, finalBrideY, bride, loadFont(BASE_FONT_SIZE * (brideScale/100) * fontSizeScale), textColor);
-
+            // 用户照片：等比覆盖裁切后贴右下角
             if (userImageBase64) {
                 try {
                     const userImg = new Image();
                     userImg.src = userImageBase64;
                     await new Promise(r => { userImg.onload = r; });
-                    const processedImg = cropToTarget(userImg, 2544, 1760);
-                    const uW = 2544 * scaleX;
-                    const uH = 1760 * scaleY;
+                    const processedImg = cropToTarget(userImg, PHOTO.w, PHOTO.h, cropZoom, cropOffsetX, cropOffsetY);
+                    const uW = PHOTO.w * s;
+                    const uH = PHOTO.h * s;
                     ctx.drawImage(processedImg, renderW - uW, renderH - uH, uW, uH);
                 } catch (e) { console.error(e); }
             }
@@ -777,66 +1153,171 @@
         }
 
         async function updatePreview() {
-            const pCtx = elements.previewCanvas.getContext('2d');
-            const w = elements.previewCanvas.parentElement.clientWidth - 20;
-            elements.previewCanvas.width = w; 
-            elements.previewCanvas.height = 200;
-            pCtx.fillStyle = "#f0f0f0"; 
-            pCtx.fillRect(0,0,w,200);
-            
+            const canvas = elements.previewCanvas;
+            const pCtx = canvas.getContext('2d');
+            const w = previewAvailWidth();
+            canvas.width = w;
+            canvas.height = 200;
+            pCtx.fillStyle = "#f0f0f0";
+            pCtx.fillRect(0, 0, w, 200);
+
             if (!resourcesLoaded) {
                 pCtx.fillStyle = "#999"; pCtx.font = "14px Arial"; pCtx.textAlign = "center";
-                pCtx.fillText("资源加载中...", w/2, 100);
+                pCtx.fillText("资源加载中...", w / 2, 100);
                 return;
             }
 
             try {
                 const composite = await generateCompositeImage(true);
                 const h = Math.floor(w * composite.height / composite.width);
-                elements.previewCanvas.width = w; 
-                elements.previewCanvas.height = h;
+                canvas.width = w;
+                canvas.height = h;
                 pCtx.drawImage(composite, 0, 0, w, h);
-                checkNameControls();
             } catch (e) {
-                pCtx.fillStyle = "red"; pCtx.fillText("出错", w/2, 100);
+                pCtx.fillStyle = "red"; pCtx.fillText("出错", w / 2, 100);
             }
         }
 
+        /* ================================================================
+           iOS 保存图片
+           ----------------------------------------------------------------
+           为什么单独处理：iOS 上 <a download> 支持不完整，尤其在「添加到主屏幕」
+           变成独立 PWA 之后，点下载常常只是导航到一张裸图片、不会存进相册。
+           做法：把生成好的图显示在弹层里，让用户长按保存；若浏览器支持
+           Web Share API（iOS 15+ / Android）再给一个走系统分享面板的按钮。
+           其他平台（桌面、Android 浏览器）维持原来的自动下载，行为完全不变。
+           ================================================================ */
+        let saveSheetUrl = null;
+
+        function isIOS() {
+            const ua = navigator.userAgent || "";
+            if (/iPhone|iPad|iPod/i.test(ua)) return true;
+            // iPadOS 13+ 的 Safari 会把 UA 伪装成 macOS，用触点数识别
+            return navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+        }
+
+        function closeSaveSheet() {
+            const sheet = document.getElementById("saveSheet");
+            if (sheet) sheet.classList.remove("show");
+            if (saveSheetUrl) {
+                const u = saveSheetUrl;
+                saveSheetUrl = null;
+                setTimeout(() => URL.revokeObjectURL(u), 1000);
+            }
+        }
+
+        function showSaveSheet(blob, filename) {
+            const sheet = document.getElementById("saveSheet");
+            const img = document.getElementById("saveSheetImg");
+            const shareBtn = document.getElementById("saveSheetShare");
+            if (!sheet || !img) return;
+
+            if (saveSheetUrl) { URL.revokeObjectURL(saveSheetUrl); saveSheetUrl = null; }
+            saveSheetUrl = URL.createObjectURL(blob);
+            img.src = saveSheetUrl;
+            sheet.classList.add("show");
+
+            // 支持 Web Share（带文件）才显示分享按钮，否则用户只能长按
+            let canShareFile = false;
+            try {
+                canShareFile = !!(navigator.canShare && navigator.canShare({
+                    files: [new File([blob], filename, { type: blob.type || "image/png" })]
+                }));
+            } catch (e) { canShareFile = false; }
+            shareBtn.style.display = canShareFile ? "" : "none";
+
+            shareBtn.onclick = async () => {
+                try {
+                    const file = new File([blob], filename, { type: blob.type || "image/png" });
+                    await navigator.share({ files: [file], title: "请柬" });
+                    closeSaveSheet();
+                } catch (err) {
+                    if (err && err.name === "AbortError") return;   // 用户自己取消，不打扰
+                    alert("当前环境不支持直接分享，请长按上面那张图 → 「存储到照片」。");
+                }
+            };
+        }
+
+        const CTA_IDLE_TEXT = "生成并保存图片";
+
         async function generateImage() {
             if (!resourcesLoaded) { alert("资源加载中..."); return; }
-            const oldTxt = elements.generateBtn.innerText;
-            elements.generateBtn.innerText = "⏳ 生成中...";
-            elements.generateBtn.disabled = true;
+            const btn = elements.generateBtn;
+            const txt = elements.generateBtnText;
+            if (btn.disabled) return;
+
+            btn.disabled = true;
+            txt.textContent = "生成中...";
+            let saved = false;
+
             try {
                 const composite = await generateCompositeImage(false);
                 const fmt = elements.fmtJpg.checked ? 'image/jpeg' : 'image/png';
-                composite.toBlob(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    const g = elements.groomInput.value.trim();
-                    const b = elements.brideInput.value.trim();
-                    let name = "wedding";
-                    if (g && b) name = `${g} ${b}`;
-                    else if (g) name = g;
-                    else if (b) name = b;
-                    a.download = `${name}.${fmt === 'image/jpeg' ? 'jpg' : 'png'}`;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    alert(`✅ 已保存：${a.download}`);
-                }, fmt, 0.95);
-            } catch (e) { alert("❌ " + e.message); }
-            finally { elements.generateBtn.innerText = oldTxt; elements.generateBtn.disabled = false; }
+
+                // 画布被「污染」时 toBlob 会直接抛错，这里捕获并给出可操作的中文提示
+                let blob = null;
+                try {
+                    blob = await new Promise((resolve, reject) => {
+                        composite.toBlob(b => b ? resolve(b) : reject(new Error("empty blob")), fmt, 0.95);
+                    });
+                } catch (err) {
+                    alert("❌ 无法导出图片\n\n"
+                        + "原因：双击打开（file://）时，浏览器会把本地的底板图当作跨源资源，\n"
+                        + "画布被「污染」后就禁止导出 —— 浏览器的安全限制，与代码无关。\n"
+                        + "部署到线上（https）打开不会有这个问题，「生成并保存图片」正常。\n\n"
+                        + "在本机想导出，任选其一：\n"
+                        + "  1) 确认本文件夹里有 back-data.js（内嵌的底板副本）——\n"
+                        + "     有这个文件时双击 index.html 就能正常导出；\n"
+                        + "  2) 部署上线（https）后再导出。");
+                    return;
+                }
+
+                const g = elements.groomInput.value.trim();
+                const b2 = elements.brideInput.value.trim();
+                let name = "wedding";
+                if (g && b2) name = `${g} ${b2}`;
+                else if (g) name = g;
+                else if (b2) name = b2;
+                const filename = `${name}.${fmt === 'image/jpeg' ? 'jpg' : 'png'}`;
+
+                // iOS（含「添加到主屏幕」的 PWA）：<a download> 不可靠 → 弹图让用户长按保存
+                if (isIOS()) { showSaveSheet(blob, filename); return; }
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                saved = true;
+            } catch (e) {
+                alert("❌ " + e.message);
+            } finally {
+                btn.disabled = false;
+                if (saved) {
+                    txt.textContent = "✓ 已保存";
+                    setTimeout(() => {
+                        if (txt.textContent === "✓ 已保存") txt.textContent = CTA_IDLE_TEXT;
+                    }, 2000);
+                } else {
+                    txt.textContent = CTA_IDLE_TEXT;
+                }
+            }
         }
 
         async function initApp() {
             elements.res4k.checked = true;
             initEventListeners();
+            syncSliderLabels();
             preloadResources();
+
+            // iOS 保存弹层：关闭按钮 + Esc（弹层在脚本之后，必须等 DOM 就绪再绑）
+            const shut = document.getElementById('saveSheetShut');
+            if (shut) shut.onclick = closeSaveSheet;
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSaveSheet(); });
         }
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
+
 </body>
 </html>
-
-
