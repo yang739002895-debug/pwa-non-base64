@@ -671,7 +671,9 @@
                     <div class="photo-info" id="photoInfo">未选择</div>
                 </div>
             </div>
-            <input type="file" id="photoFile" accept="image/*" style="display:none;">
+            <!-- 刻意不写 accept：手机上限制了类型会先弹「照片图库 / 拍照 / 浏览文件」来源菜单，
+                 反而多点一层；类型由 handlePhotoUpload 里的 MIME 白名单把关 -->
+            <input type="file" id="photoFile" style="display:none;">
         </div>
 
     </div>

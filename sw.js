@@ -1,5 +1,6 @@
-const CACHE_NAME = 'nonbase64-pwa-v1'; // 本公司横版（底板 3840×2160，4K 输出即 3840×2160）；缓存优先，每次改文件都必须改这个版本号
+const CACHE_NAME = 'nonbase64-pwa-v2'; // 本公司横版（底板 3840×2160，4K 输出即 3840×2160）；缓存优先，每次改文件都必须改这个版本号
 // v1: 整套 UI 换成「格丽诗方 v3.10」那套外壳（预览区按钮下移 + 竖排文件名 + 并排折叠面板 + 一行式底栏）。
+// v2: 选图 input 去掉 accept="image/*"，不限制文件类型（校验仍走 MIME 白名单）。
 //     ★ 缓存前缀特意用 'nonbase64-pwa-'：'gelishi-pwa-' 是竖版请柬那套的，
 //       两者可能部署在同一个 GitHub Pages 源（同源共享 Cache Storage），前缀必须区分开。
 const urlsToCache = [
